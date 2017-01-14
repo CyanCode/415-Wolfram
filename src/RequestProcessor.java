@@ -53,11 +53,11 @@ public class RequestProcessor {
 	public String getResponse() {
 		String result = "";
 		result += inputPod == null ? "" : "\n" + inputPod.toString();
-		result += firstPod == null ? "" : "\n" + firstPod.toString();
 		
 		for (Assumption assumption : assumptions) {
 			result += '\n' + assumption.toString();
 		}
+		result += firstPod == null ? "" : "\n" + firstPod.toString();
 		
 		int optionNumber = 1;
 		

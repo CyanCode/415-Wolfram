@@ -19,6 +19,7 @@ public class Assumption {
         
         String word = assumptionElement.attr("word");
         description = description.replace("${word}", word);
+        description = description.replace("${desc1}", names.get(0));
     }
 
     public String getURL(int numOfAssumption) {
