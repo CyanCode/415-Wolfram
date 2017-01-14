@@ -47,15 +47,15 @@ public class RequestProcessor {
 
 	public String getResponse() {
 		String result = "";
-		result += inputPod == null ? "" : inputPod.toString() + "\n";
-		result += firstPod == null ? "" : firstPod.toString() + "\n";
+		result += inputPod == null ? "" : "\n" + inputPod.toString();
+		result += firstPod == null ? "" : "\n" + firstPod.toString();
 		if (extraPods.size() > 0) {
-			result += "Respond with a number below for more information\n";
+			result += "\nRespond with a number below for more information";
 			for (int i = 0; i < extraPods.size(); i++) {
-				result += (i + 1) + ". " + extraPods.get(i).getTitle() + "\n";
+				result += "\n" + (i + 1) + ". " + extraPods.get(i).getTitle();
 			}
 		}
-		return result;
+		return result.equals("") ? "" : result.substring(1);
 	}
 	public String podString(int podNumber) {
 		return extraPods.get(podNumber - 1).toString();
