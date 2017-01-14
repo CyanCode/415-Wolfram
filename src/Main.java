@@ -9,6 +9,7 @@ public class Main {
 		
 		while (running) {
 			String input = scanner.nextLine();
+			
 			if (processor.validRequest(input)) {
 				System.out.println(processor.podString(Integer.valueOf(input)));
 			} else {

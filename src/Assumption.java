@@ -1,7 +1,6 @@
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 public class Assumption {
     private String description;

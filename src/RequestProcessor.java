@@ -15,22 +15,15 @@ public class RequestProcessor {
 	
 	public RequestProcessor(String query) {
 		this.query = query;
-		queryServer();
 	}
 	
 	/**
 	 * Queries the WolframAlpha server and returns the XML response
 	 * @return XML response
 	 */
-	private void queryServer() {
+	private Document queryServer() throws IOException {
 		String fullURL = "http://api.wolframalpha.com/v2/query?input=" + query + "&appid=" + ServerKey.getKey();
-		try {
-			Document doc = Jsoup.connect(fullURL).timeout(1000 * 10).get();
-			parseDocument(doc);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return Jsoup.connect(fullURL).timeout(1000 * 10).get();
 	}
 	
 	private void parseDocument(Document doc) {
@@ -44,13 +37,25 @@ public class RequestProcessor {
 				extraPods.add(currPod);
 			}
 		}
+		
 		for (Element element : doc.select("assumption")) {
 			assumptions.add(new Assumption(element));
 		}
 
 	}
 
+	/**
+	 * Queries the server and returns the initial response from 
+	 * the server for the query associated with this request
+	 * @return Response from the server
+	 */
 	public String getResponse() {
+		try {
+			parseDocument(queryServer());
+		} catch (IOException e) {
+			e.printStackTrace(); // TODO Auto-generated catch block
+		}
+		
 		String result = "";
 		result += inputPod == null ? "" : "\n" + inputPod.toString();
 		result += firstPod == null ? "" : "\n" + firstPod.toString();
