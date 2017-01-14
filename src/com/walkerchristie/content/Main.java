@@ -1,3 +1,4 @@
+package com.walkerchristie.content;
 import java.util.Scanner;
 
 public class Main {
