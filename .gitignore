@@ -1,9 +1,11 @@
 .settings/
 bin
 target
+
 .classpath
+
 .project
-pom.xml
+
 key.txt
 
 .idea/
