@@ -11,6 +11,7 @@ public class RequestProcessor {
 	private Pod inputPod;
 	private Pod firstPod;
 	private ArrayList<Pod> extraPods = new ArrayList<>();
+	private ArrayList<Assumption> assumptions = new ArrayList<>();
 	
 	public RequestProcessor(String query) {
 		this.query = query;
@@ -43,17 +44,29 @@ public class RequestProcessor {
 				extraPods.add(currPod);
 			}
 		}
+		for (Element element : doc.select("assumption")) {
+			assumptions.add(new Assumption(element));
+		}
+
 	}
 
 	public String getResponse() {
 		String result = "";
 		result += inputPod == null ? "" : "\n" + inputPod.toString();
 		result += firstPod == null ? "" : "\n" + firstPod.toString();
+		for (Assumption assumption : assumptions) {
+			result += '\n' + assumption.toString();
+		}
+		int optionNumber = 1;
 		if (extraPods.size() > 0) {
 			result += "\nRespond with a number below for more information";
-			for (int i = 0; i < extraPods.size(); i++) {
-				result += "\n" + (i + 1) + ". " + extraPods.get(i).getTitle();
+			for (Pod pod : extraPods) {
+				result += "\n" + optionNumber + ". " + pod.getTitle();
+				optionNumber++;
 			}
+		}
+		if (assumptions.size() > 0) {
+			result += "\n" + optionNumber + ". Assumption Options";
 		}
 		return result.equals("") ? "" : result.substring(1);
 	}

@@ -5,3 +5,5 @@ target
 .project
 pom.xml
 key.txt
+
+.idea/
