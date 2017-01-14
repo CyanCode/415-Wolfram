@@ -54,10 +54,13 @@ public class RequestProcessor {
 		String result = "";
 		result += inputPod == null ? "" : "\n" + inputPod.toString();
 		result += firstPod == null ? "" : "\n" + firstPod.toString();
+		
 		for (Assumption assumption : assumptions) {
 			result += '\n' + assumption.toString();
 		}
+		
 		int optionNumber = 1;
+		
 		if (extraPods.size() > 0) {
 			result += "\nRespond with a number below for more information";
 			for (Pod pod : extraPods) {
@@ -65,14 +68,18 @@ public class RequestProcessor {
 				optionNumber++;
 			}
 		}
+		
 		if (assumptions.size() > 0) {
 			result += "\n" + optionNumber + ". Assumption Options";
 		}
+		
 		return result.equals("") ? "" : result.substring(1);
 	}
+	
 	public String podString(int podNumber) {
 		return extraPods.get(podNumber - 1).toString();
 	}
+	
 	public boolean validRequest(String request) {
 		try {
 			int requestInt = Integer.valueOf(request);
