@@ -1,5 +1,7 @@
 package com.walkerchristie.content;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -38,7 +40,7 @@ public class RequestProcessor {
 		int optionNumber = 1;
 
 		if (extraPods.size() > 0) {
-			result += "\nRespond with a number below for more information";
+			result += "\n*Respond with a number below for more information*";
 			for (Pod pod : extraPods) {
 				result += "\n" + optionNumber + ". " + pod.getTitle();
 				optionNumber++;
@@ -60,9 +62,16 @@ public class RequestProcessor {
 		} else if (assumptionOptions.length > 0 && choice == extraPods.size() + 1) {
 			return getAssumptionOptions();
 		} else if (choice > assumptionOptions.length + 1 && choice < assumptionOptions.length + extraPods.size() + 1) {
-			currentUrl += "&assumption=" + assumptionOptions[1][(choice - extraPods.size() - 1)];
+			currentUrl += "&assumption=" + assumptionOptions[1][(choice - extraPods.size() - 2)];
 			return getResponse();
 		} else {
+			try {
+				message = URLEncoder.encode(message, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return "An internal error occured, please try again later!";
+			}
+			
 			currentUrl = "http://api.wolframalpha.com/v2/query?input=" + message + "&appid=" + ServerKey.getWolframKey();
 			return getResponse();
 		}
@@ -71,9 +80,9 @@ public class RequestProcessor {
 	private String getAssumptionOptions() {
 		String result = "";
 		for (int i = 0; i < assumptionOptions.length; i++) {
-			result += (i + 1 + extraPods.size()) + ". " + assumptionOptions[0][i];
+			result += "\n" + (i + 2 + extraPods.size()) + ". " + assumptionOptions[0][i];
 		}
-		return result;
+		return result.substring(1);
 	}
 
 
@@ -82,12 +91,23 @@ public class RequestProcessor {
 	 * @return XML response
 	 */
 	private Document queryServer() throws IOException {
+		assumptionOptions = new String[0][0];
+		assumptionStatements = new ArrayList<>();
+		inputPod = null;
+		firstPod = null;
+		extraPods = new ArrayList<>();
+		
 		return Jsoup.connect(currentUrl).timeout(1000 * 10).get();
 	}
 
 	private void parseDocument(Document doc) {
 		for (Element element : doc.select("pod")) {
+			if (element.select("plaintext").text().equals("")) {
+				continue;
+			}
+			
 			Pod currPod = new Pod(element.attr("title"), element.select("plaintext").text());
+			
 			if (currPod.isInput()) {
 				inputPod = currPod;
 			} else if (firstPod == null) {
@@ -96,8 +116,7 @@ public class RequestProcessor {
 				extraPods.add(currPod);
 			}
 		}
-		assumptionOptions = new String[0][0];
-		assumptionStatements = new ArrayList<>();
+
 		for (Element element : doc.select("assumption")) {
 			AssumptionParser assumptionParser = new AssumptionParser(element);
 			this.assumptionStatements.add((assumptionParser.getStatement()));

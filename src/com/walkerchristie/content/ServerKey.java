@@ -7,15 +7,16 @@ public class ServerKey {
 	private static String wolframKey, twilioKey;
 
 	public static String getWolframKey() {
-		try {
-			return wolframKey == null ? new String(Files.readAllBytes(Paths.get("wolframkey.txt"))) : wolframKey;
-		} catch (IOException e) {
-			System.out.println("Ensure that you've created a wolframkey.txt file in the root of your project.");
-			e.printStackTrace();
-
-			System.exit(1);
-			return null;
-		}
+		//try {
+			return "UVYUVP-3H75RTUX6Q";
+			//return wolframKey == null ? new String(Files.readAllBytes(Paths.get("wolframkey.txt"))) : wolframKey;
+//		} catch (IOException e) {
+//			System.out.println("Ensure that you've created a wolframkey.txt file in the root of your project.");
+//			e.printStackTrace();
+//
+//			System.exit(1);
+//			return null;
+//		}
 	}
 	public static String getTwilioKey() {
 		try {
