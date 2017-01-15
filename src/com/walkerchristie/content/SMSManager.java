@@ -1,7 +1,9 @@
 package com.walkerchristie.content;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +21,17 @@ public class SMSManager extends HttpServlet  {
 		super.init();
 		System.out.println("Started");
 	}
-	
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Set response content type
+		response.setContentType("text/html");
+
+		// Actual logic goes here.
+		PrintWriter out = response.getWriter();
+		out.println("<h1>Hey</h1>");
+	}
+
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Message sms = new Message
@@ -27,6 +39,7 @@ public class SMSManager extends HttpServlet  {
 				.body(new Body("The Robots are coming! Head for the hills!"))
 				.build();
 
+		System.out.println("TEST");
 		MessagingResponse twiml = new MessagingResponse.Builder().message(sms).build();
 		response.setContentType("application/xml");
 
