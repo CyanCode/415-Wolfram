@@ -11,7 +11,8 @@ public class RequestProcessor {
 	private String currentUrl;
 	
 	private ArrayList<Pod> extraPods = new ArrayList<>();
-	private ArrayList<Assumption> assumptions = new ArrayList<>();
+	private String[][] assumptionOptions = new String[0][0];
+	private ArrayList<String> assumptionStatements = new ArrayList<>();
 
 	/**
 	 * Queries the server and returns the initial response from 
@@ -28,8 +29,8 @@ public class RequestProcessor {
 		String result = "";
 		result += inputPod == null ? "" : "\n" + inputPod.toString();
 
-		for (Assumption assumption : assumptions) {
-			result += '\n' + assumption.toString();
+		for (String statement : assumptionStatements) {
+			result += '\n' + statement;
 		}
 
 		result += firstPod == null ? "" : "\n" + firstPod.toString();
@@ -44,7 +45,7 @@ public class RequestProcessor {
 			}
 		}
 
-		if (assumptions.size() > 0) {
+		if (assumptionOptions.length > 0) {
 			result += "\n" + optionNumber + ". Assumption Options";
 		}
 
@@ -56,10 +57,10 @@ public class RequestProcessor {
 
 		if (choice > 0 && choice <= extraPods.size()) {
 			return extraPods.get(choice - 1).toString();
-		} else if (assumptions.size() > 0 && choice == extraPods.size() + 1) {
-			//TODO: Show assumptions
-		} else if (choice > assumptions.size() + 1 && choice < assumptions.size() + extraPods.size() + 1) {
-			url += "&assumption=" + assumptions.get(choice - extraPods.size() - 1).getURL(numOfAssumption);
+		} else if (assumptionOptions.length > 0 && choice == extraPods.size() + 1) {
+			return getAssumptionOptions();
+		} else if (choice > assumptionOptions.length + 1 && choice < assumptionOptions.length + extraPods.size() + 1) {
+			currentUrl += "&assumption=" + assumptionOptions[1][(choice - extraPods.size() - 1)];
 			return getResponse();
 		} else {
 			currentUrl = "http://api.wolframalpha.com/v2/query?input=" + message + "&appid=" + ServerKey.getWolframKey();
@@ -67,14 +68,14 @@ public class RequestProcessor {
 		}
 	}
 
-	public boolean validRequest(String request) {
-		try {
-			int requestInt = Integer.valueOf(request);
-			return (requestInt > 0 && requestInt < extraPods.size() + 1);
-		} catch (Exception e) {
-			return false;
+	private String getAssumptionOptions() {
+		String result = "";
+		for (int i = 0; i < assumptionOptions.length; i++) {
+			result += (i + 1 + extraPods.size()) + ". " + assumptionOptions[0][i];
 		}
+		return result;
 	}
+
 
 	/**
 	 * Queries the WolframAlpha server and returns the XML response
@@ -95,9 +96,12 @@ public class RequestProcessor {
 				extraPods.add(currPod);
 			}
 		}
-
+		assumptionOptions = new String[0][0];
+		assumptionStatements = new ArrayList<>();
 		for (Element element : doc.select("assumption")) {
-			assumptions.add(new Assumption(element));
+			AssumptionParser assumptionParser = new AssumptionParser(element);
+			this.assumptionStatements.add((assumptionParser.getStatement()));
+			this.assumptionOptions = assumptionParser.getAssumptionOptions();
 		}
 	}
 
