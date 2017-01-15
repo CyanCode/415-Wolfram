@@ -23,7 +23,7 @@ public class RequestProcessor {
 	 * @return XML response
 	 */
 	private Document queryServer() throws IOException {
-		String fullURL = "http://api.wolframalpha.com/v2/query?input=" + query + "&appid=" + ServerKey.getKey();
+		String fullURL = "http://api.wolframalpha.com/v2/query?input=" + query + "&appid=" + ServerKey.getWolframKey();
 		return Jsoup.connect(fullURL).timeout(1000 * 10).get();
 	}
 	
